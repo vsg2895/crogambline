@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    Crogambline tab mark: the square violet tile with an open "C" and a coral
+    pip, from src/components/Logo.tsx.
+
+    Colours are literal hex, not CSS variables: this file is read by
+    apple-icon.tsx and rendered to PNG by satori, which resolves no custom
+    properties. The <rect> must stay FIRST and keep an explicit fill — that is
+    the plate colour iOS composites against.
+
+    Stroke weight is deliberately heavy: at 16px a hairline curve disappears.
+  -->
+  <rect width="32" height="32" rx="4" fill="#7c5cff"/>
+  <path d="M21.6 10.2a7.4 7.4 0 1 0 0 11.6" fill="none" stroke="#0d0820"
+        stroke-width="3.4" stroke-linecap="square"/>
+  <rect x="21" y="13.2" width="5.6" height="5.6" fill="#ff7a5c"/>
+</svg>

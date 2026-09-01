@@ -1,0 +1,184 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Crogambline — deep violet ground, violet primary, coral accent, 3px radius.
+   Fonts: IBM Plex Sans (body) + Archivo (display) + IBM Plex Mono (kickers).
+   Palette lifted from sites/crogambline.html.
+
+   TOKEN NAMES are identical to the sibling sites (cream/paper/ink/brand/…) so
+   every shared component works here unchanged — only the values differ. A
+   component written for nongambles renders correctly with no conditional. */
+:root {
+  --background: #140f22;
+  --foreground: #efebff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* `cream` is the BASE page surface, `paper` the raised panel above it, and
+     `surface` a third step used by the mockup's tiles. All three are dark: the
+     names are shared with the siblings, and a light value here would collide
+     with `ink` (also light) and render text invisible on its own background. */
+  --color-cream: #140f22;
+  --color-paper: #1b1430;
+  --color-surface: #221a3b;
+
+  --color-ink: #efebff;
+  --color-ink-soft: #d6cff0;
+  --color-muted: #a79cc7;
+  --color-faint: #6f6494;
+
+  /* Violet primary. `brand-ink` is the text colour that goes ON it. */
+  --color-brand: #7c5cff;
+  --color-brand-dark: #6647e6;
+  --color-brand-soft: #9a80ff;
+  --color-brand-ink: #0d0820;
+
+  /* Coral secondary — the mockup's `accent`, used for the focus ring, the
+     logo pip and the ghost-button hover. A genuinely separate hue here, unlike
+     the sibling whose accent equals its brand. */
+  --color-accent: #ff7a5c;
+  --color-accent-dark: #e9603f;
+  --color-accent-ink: #2a0c05;
+
+  --color-line: #322752;
+  --color-line-soft: #453770;
+
+  --color-gold: #ffc46b;
+  --color-win: #6fe0a8;
+  --color-win-bg: #10281d;
+
+  --font-sans: var(--font-plex-sans);
+  --font-display: var(--font-archivo);
+  --font-mono: var(--font-plex-mono);
+
+  /* 3px, not the siblings' 8-16px. The design is deliberately sharp-edged. */
+  --radius-cg: 3px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plex-sans), system-ui, Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* Mono kicker — the uppercase, wide-tracked label above section headings. */
+.kicker {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* ── Design vocabulary from sites/crogambline.html ──────────────────────────
+   Named component classes rather than repeated utility strings: each appears
+   on dozens of elements, and the hover/focus states cannot be written inline. */
+
+.card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-cg);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.card:hover {
+  border-color: var(--color-line-soft);
+  transform: translateY(-2px);
+}
+/* The lift is decorative; anyone who has asked for less motion gets none. */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: #fff;
+  border-radius: var(--radius-cg);
+}
+.btn-primary:hover { background: var(--color-brand-dark); }
+
+.btn-accent {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  border-radius: var(--radius-cg);
+}
+.btn-accent:hover { background: var(--color-accent-dark); }
+
+.btn-ghost {
+  border: 1px solid var(--color-line-soft);
+  color: var(--color-ink);
+  border-radius: var(--radius-cg);
+}
+.btn-ghost:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Category chip. `chip-active` is the selected state. */
+.chip {
+  border: 1px solid var(--color-line);
+  color: var(--color-muted);
+  border-radius: var(--radius-cg);
+}
+.chip:hover {
+  border-color: var(--color-line-soft);
+  color: var(--color-ink);
+}
+.chip-active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: #fff;
+}
+
+/* Hero ground: a violet bloom top-right, coral bottom-left. */
+.hero-wash {
+  background:
+    radial-gradient(70% 90% at 88% 8%, rgba(124, 92, 255, 0.28) 0%, rgba(124, 92, 255, 0) 60%),
+    radial-gradient(50% 60% at 6% 96%, rgba(255, 122, 92, 0.16) 0%, rgba(255, 122, 92, 0) 65%),
+    linear-gradient(180deg, #150f24 0%, #191230 60%, #140f22 100%);
+}
+
+/* ── Responsive safety net (all phones / tablets / laptops / large screens) ── */
+html {
+  -webkit-text-size-adjust: 100%; /* no iOS text auto-inflation on rotate */
+}
+body {
+  overflow-x: clip; /* never scroll the page sideways; safe with the sticky header */
+}
+
+/* Hide the scrollbar on horizontally-scrollable rows (e.g. the mobile nav). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scraped HTML content (casino / offer descriptions) must stay in its column
+   on small screens: wrap long words, cap media width, scroll wide tables. */
+.prose {
+  overflow-wrap: break-word;
+}
+.prose :where(img, video, iframe) {
+  max-width: 100%;
+  height: auto;
+}
+.prose :where(table) {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+.prose :where(pre) {
+  overflow-x: auto;
+}
