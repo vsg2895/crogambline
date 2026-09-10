@@ -57,7 +57,12 @@ export default function Logo({ className = '' }: { className?: string }) {
 
       <span className="flex flex-col leading-none">
         <span className="font-display text-[19px] text-ink">Crogambline</span>
-        <span className="kicker mt-[4px] text-[8px] text-faint">Time to cash</span>
+        {/* No tracking utility here: `.kicker` in globals.css is un-layered
+            CSS, which beats Tailwind v4's layered utilities in the cascade,
+            so a `tracking-*` class on this element is silently inert. Its
+            0.2em is what renders, and at 11px that leaves the tagline exactly
+            as wide as the wordmark above it — measured, not assumed. */}
+        <span className="kicker mt-[4px] text-[11px] text-faint">Time to cash</span>
       </span>
     </Link>
   )
