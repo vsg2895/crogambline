@@ -111,7 +111,24 @@ export const COPY = {
     subtitle: 'One email when a casino\u2019s payout time moves — faster or slower. Nothing else.',
     placeholder: 'Email for payout timings',
     button: 'Subscribe',
-    success: 'Almost set — confirm the link in your inbox to get new payout timings.',
+    // Shown while the address is being checked. The subscribe request now
+    // waits on a live address-validation call, so the button has to say so
+    // rather than just dimming for a second or two.
+    checking: 'Checking…',
+        // The spam line is NOT optional wording. This is a double opt-in list: an
+    // unconfirmed subscriber never receives anything again, and the verify mail
+    // is the single most likely message to be filtered — new sender, one link,
+    // no history. Telling people where to look is the difference between a
+    // signup and a dead row.
+    success:
+      'Almost set — confirm the link in your inbox to get new payout timings. '
+      + 'No sign of it? Look in spam or junk.',
+    // Shown when the API reports email_sent=false — the site is still
+    // collecting addresses but its sending is switched off in the admin.
+    // Promising an inbox (and a spam folder to search) for mail that will
+    // never arrive is worse than not collecting the address at all.
+    successNoEmail:
+      "You're on the list. Confirmation emails are paused on this site right now.",
     error: 'That did not get through. Try once more.',
   },
   footer: {
