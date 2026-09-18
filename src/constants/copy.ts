@@ -147,7 +147,7 @@ export const COPY = {
     // address in the footer is what mailbox providers and the gambling
     // affiliate compliance checks both look for, and it must match the address
     // used in the email templates.
-    postalAddress: '1 Cathedral Square, Bristol BS1 5DD, United Kingdom',
+    postalAddress: '10 Downing St, London SW1A 2AA, United Kingdom',
     disclaimer:
       'Gambling carries real financial risk and is for adults aged 18 and over only. A fast withdrawal is not a reason to deposit more than you can afford to lose. Some links here earn us a commission; it plays no part in a measured payout time.',
   },
