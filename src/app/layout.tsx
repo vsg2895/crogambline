@@ -233,7 +233,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <ul className="flex flex-wrap gap-x-5 gap-y-2">
                 {LEGAL_PAGES.map(({ slug, label }) => (
                   <li key={slug}>
-                    <Link href={`/${slug}`} className="inline-block -mx-1 px-1 py-3 -my-3 text-sm sm:text-sm text-faint sm:text-xs transition-colors hover:text-brand">{label}</Link>
+                    <Link href={`/${slug}`} className="inline-block -mx-1 px-1 py-3 -my-3 text-sm text-faint transition-colors hover:text-brand sm:text-xs">{label}</Link>
                   </li>
                 ))}
                 <li>
