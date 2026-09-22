@@ -51,7 +51,7 @@ export default function Logo({ className = '' }: { className?: string }) {
     <Link
       href="/"
       aria-label="Crogambline home"
-      className={`inline-flex shrink-0 items-center gap-3 rounded-[3px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${className}`.trim()}
+      className={`inline-flex min-h-11 shrink-0 items-center gap-3 rounded-[3px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cream ${className}`.trim()}
     >
       <LogoMark />
 
@@ -62,7 +62,7 @@ export default function Logo({ className = '' }: { className?: string }) {
             so a `tracking-*` class on this element is silently inert. Its
             0.2em is what renders, and at 11px that leaves the tagline exactly
             as wide as the wordmark above it — measured, not assumed. */}
-        <span className="kicker mt-[4px] text-[11px] text-faint">Time to cash</span>
+        <span className="kicker mt-[4px] text-xs text-faint">Time to cash</span>
       </span>
     </Link>
   )
