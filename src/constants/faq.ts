@@ -31,11 +31,6 @@ export const FAQ_ITEMS = [
       'For anything routed through a bank, yes — a Friday evening request often lands on Tuesday. Casinos that process internally at weekends are flagged, because it is one of the few things that reliably separates a fast payer from an average one.',
   },
   {
-    question: 'Do you get paid by the casinos you time?',
-    answer:
-      'We may earn a commission when someone signs up through a link here. It has no bearing on a measured time and cannot buy a position: the ordering is generated from the recorded hours, and a slow result stays published.',
-  },
-  {
     question: 'How often are the timings rechecked?',
     answer:
       'We re-test periodically and after any report that a site has slowed. A casino whose payout time worsens is re-ordered, and if it stops paying within a reasonable window it comes off the list entirely rather than being quietly downgraded.',

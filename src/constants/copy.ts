@@ -149,7 +149,7 @@ export const COPY = {
     // used in the email templates.
     postalAddress: '10 Downing St, London SW1A 2AA, United Kingdom',
     disclaimer:
-      'Gambling carries real financial risk and is for adults aged 18 and over only. A fast withdrawal is not a reason to deposit more than you can afford to lose. Some links here earn us a commission; it plays no part in a measured payout time.',
+      'Gambling carries real financial risk and is for adults aged 18 and over only. A fast withdrawal is not a reason to deposit more than you can afford to lose.',
   },
   errors: {
     notFound: 'No page here. A casino that stops paying gets delisted, not hidden.',
