@@ -26,7 +26,7 @@ export const COPY = {
   // itself across the pages that fall back to this one (the legal pages, the
   // 404, and any CMS page with no meta description authored in the admin).
   site: {
-    titleTail: 'Time to Cash, Measured',
+    titleTail: 'Time To Cash, Measured',
     description:
       'requests a withdrawal at every casino it lists and records how many hours it takes to arrive — then ranks on the measured number, not the advertised one.',
     keywords: [
@@ -49,19 +49,19 @@ export const COPY = {
     heroHighlight: 'Then we rank.',
     heroSubtitle:
       'Every casino on this list has paid us. We time the request, the pending window and the verification, then publish the hours it took.',
-    topCasinosTitle: 'Top casinos by tested payout',
+    topCasinosTitle: 'Top Casinos By Tested Payout',
     topCasinosSubtitle: 'Ordered by the hours between our request and the money arriving. Filter by category.',
     featuredCasinos: 'See The Timings',
     specialOffers: 'Offers From Fast Payers',
     viewAll: 'View All',
     // Leads the home <title>; the year and brand are appended in page.tsx.
-    homeTitle: 'Time to Cash, Measured',
-    faqTitle: 'How a score is built',
+    homeTitle: 'Time To Cash, Measured',
+    faqTitle: 'How A Score Is Built',
     metaDescription:
       'We request a withdrawal at every casino we list and record how many hours it takes to arrive. The number you see is the one we measured.',
   },
   casinos: {
-    pageTitle: 'Ranked by Time to Cash',
+    pageTitle: 'Ranked By Time To Cash',
     pageDescription:
       'Casinos ordered by measured hours from request to funds received, with the pending window and verification delay listed separately.',
     // Meta-description fallback for a casino review page. Casino records are
@@ -98,7 +98,7 @@ export const COPY = {
     noResults: 'No current offers from a casino we have timed.',
   },
   categories: {
-    pageTitle: 'Browse by What Slows You Down',
+    pageTitle: 'Browse By What Slows You Down',
     pageDescription:
       'The things that decide whether you wait hours or days — verification, payment method, weekends, pending windows.',
     // Meta-description tail for a single category page. Category records are
@@ -107,7 +107,7 @@ export const COPY = {
     noResults: 'Nothing in this category has been timed yet.',
   },
   newsletter: {
-    title: 'Get the payout alert, not the promo blast',
+    title: 'Get The Payout Alert, Not The Promo Blast',
     subtitle: 'One email when a casino\u2019s payout time moves — faster or slower. Nothing else.',
     placeholder: 'Email for payout timings',
     button: 'Subscribe',
