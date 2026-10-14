@@ -188,14 +188,22 @@ export default async function HomePage({ searchParams }: Props) {
                 * stay the brightest thing in the band. A saturated panel would
                 * flatten them by contrast.
                 */}
-              <div className="relative overflow-hidden rounded-3xl bg-paper px-4 py-6 ring-1 ring-line sm:px-8 sm:py-8">
-                {/* Decoration only. No -z-10: the panel paints its own
-                    background, and a layer sent behind it would never be seen. */}
-                <div aria-hidden className="pointer-events-none absolute inset-0">
-                  <div className="absolute -left-24 -top-28 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(124,92,255,0.22),transparent_70%)] blur-2xl" />
-                  <div className="absolute -right-20 -bottom-28 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(255,122,92,0.16),transparent_70%)] blur-2xl" />
-                </div>
-
+              {/*
+                * The site's OWN hero wash, not a hand-mixed copy of it.
+                *
+                * `.hero-wash` is the gradient behind the headline at the top of
+                * this page — the violet bloom, the coral corner and the
+                * vertical fall to the page ground, defined once in globals.css.
+                * Reusing it means this band is the same surface as the hero
+                * rather than something that merely resembles it, and a change
+                * to the brand moves both together instead of leaving one of
+                * them behind.
+                *
+                * It carries its own background, so the decoration layer this
+                * block used to have is gone: three radial gradients stacked
+                * under the chips, where one class already says it.
+                */}
+              <div className="hero-wash relative overflow-hidden rounded-3xl px-4 py-6 sm:px-8 sm:py-8">
                 <div className="relative">
                   <BonusCategoryNav sections={bonusSections} />
                 </div>

@@ -111,7 +111,25 @@ export default function BonusCategoryNav({ sections }: { sections: BonusSection[
 
           return (
             <li key={section.id}>
-              <Link href={`/bonuses/${section.slug}`} className="chip flex h-full w-full min-h-11 items-center justify-center gap-2.5 px-4 py-2 text-sm font-medium transition-colors">
+              <Link
+                href={`/bonuses/${section.slug}`}
+                /*
+                 * A FILLED violet block, not the bordered `.chip`.
+                 *
+                 * `.chip` is a border and a text colour with nothing behind it
+                 * — which is right in the casino nav, where it sits on the flat
+                 * page. On the washed panel here eight of them read as a grid
+                 * of lines rather than eight buttons: the only thing drawn was
+                 * the separation between them.
+                 *
+                 * So the chip gets a surface of the site's own violet instead,
+                 * and loses the border entirely. The fill is what makes it a
+                 * block; a border on top of it would put the lines back.
+                 * Radius written literally (3px) to match --radius-cg, the
+                 * sharp edge this design is built on.
+                 */
+                className="flex h-full w-full min-h-11 items-center gap-2.5 rounded-[3px] bg-[rgba(124,92,255,0.14)] px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-[rgba(124,92,255,0.26)]"
+              >
                 {icon && (
                   /*
                    * A plain <img>, not next/image: the optimizer refuses SVG
@@ -132,10 +150,16 @@ export default function BonusCategoryNav({ sections }: { sections: BonusSection[
                   />
                 )}
 
+                {/* LEFT-aligned, not centred.
+                    With the tracks equal and the contents centred, every chip
+                    put its icon and its label at a different distance from its
+                    own left edge — so the column read as ragged even though the
+                    boxes were identical. Starting them all at the same point is
+                    what makes a set of equal boxes look like a set. */}
                 <span>{section.name}</span>
 
                 {/* Inside the link, as part of what the button says. */}
-                <span className="text-xs text-faint font-semibold tabular-nums">{section.offers_count}</span>
+                <span className="ml-auto text-xs text-muted font-semibold tabular-nums">{section.offers_count}</span>
               </Link>
             </li>
           )
