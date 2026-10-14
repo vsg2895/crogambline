@@ -51,7 +51,10 @@
   --color-win-bg: #10281d;
 
   --font-sans: var(--font-plex-sans);
-  --font-display: var(--font-archivo);
+  /* `Ampersand` first — see the @font-face below. It carries exactly one
+     character, so Archivo still draws every other glyph in a heading. The sans
+     and mono stacks are untouched: IBM Plex draws a conventional ampersand. */
+  --font-display: 'Ampersand', var(--font-archivo);
   --font-mono: var(--font-plex-mono);
 
   /* 3px, not the siblings' 8-16px. The design is deliberately sharp-edged. */
@@ -65,8 +68,32 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── The ampersand, in display type only ────────────────────────────────────
+   Archivo draws "&" as an Et-ligature — a shape most readers do not recognise
+   as an ampersand at all, so a heading like "Slots & Live Casino" reads as a
+   typo. The text is right (a plain U+0026, encoded `&amp;` in the HTML); it is
+   the glyph, and Archivo offers no way to change it: the file Google serves
+   has a single `ampersand` glyph and no `salt` / `ss01` feature.
+
+   So that ONE character comes from a grotesque the reader already has.
+   `unicode-range` is what makes this safe: the face is only ever consulted for
+   U+0026, nothing is downloaded, and a device with none of these falls through
+   to Archivo — the status quo, never a blank. The list covers macOS/iOS,
+   Windows, Android and the two usual Linux sets.
+
+   A SANS ampersand here, where roulettingo's is a serif: this design is
+   sharp-edged Archivo 800 on violet, and a Georgia ampersand would read as a
+   mistake of a different kind. Each site borrows the character from something
+   that matches the face around it. */
+@font-face {
+  font-family: 'Ampersand';
+  src: local('Helvetica Neue'), local('Arial'), local('Segoe UI'),
+    local('Roboto'), local('Noto Sans'), local('DejaVu Sans');
+  unicode-range: U+0026;
+}
+
 .font-display {
-  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-family: 'Ampersand', var(--font-archivo), system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
