@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google'
 import Link from 'next/link'
+import ScrollToTopOnNavigate from '@/components/ScrollToTopOnNavigate'
 import NewsletterForm from '@/components/NewsletterForm'
 import SocialIcons from '@/components/SocialIcons'
 import CookieConsent from '@/components/CookieConsent'
@@ -202,6 +203,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en" className={`${plexSans.variable} ${archivo.variable} ${plexMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-cream text-ink">
+        {/* Opens every page at its top — see the component. */}
+        <ScrollToTopOnNavigate />
         <ToastProvider>
         <script
           type="application/ld+json"
