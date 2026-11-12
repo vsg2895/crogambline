@@ -21,8 +21,10 @@ import type { SocialLink } from '@shared/types/socialLink'
 import './globals.css'
 
 const plexSans = IBM_Plex_Sans({ variable: '--font-plex-sans', subsets: ['latin'], weight: ['400', '500', '600'] })
-// Archivo carries the display weights the design uses (800 for headings).
-const archivo = Archivo({ variable: '--font-archivo', subsets: ['latin'], weight: ['500', '600', '700', '800'] })
+// Archivo as a VARIABLE font with its width axis: the design sets headings
+// wide (font-stretch 112-118%) and heavy (800-900), which a fixed-width static
+// cut cannot draw. Omitting `weight` is what makes next/font serve the variable file.
+const archivo = Archivo({ variable: '--font-archivo', subsets: ['latin'], axes: ['wdth'] })
 // Mono is not decorative here: the kickers and every measured figure
 // (hours, percentages) are set in it, and tabular digits matter for those.
 const plexMono = IBM_Plex_Mono({ variable: '--font-plex-mono', subsets: ['latin'], weight: ['400', '500', '600'] })
@@ -134,6 +136,20 @@ export const viewport: Viewport = {
   themeColor: '#140f22',
 }
 
+const NAV_LINK = 'flex min-h-11 items-center whitespace-nowrap rounded-[10px] px-[13px] py-[9px] text-[15px] font-medium text-ink transition-colors hover:bg-paper'
+
+const FOOTER_LINK = 'inline-block -mx-1 px-1 py-1.5 -my-1.5 text-sm text-muted transition-colors hover:text-white'
+
+// The 11 legal pages split into the footer's three columns. Every page in
+// LEGAL_PAGES lands in exactly one of them.
+const FOOTER_EXPLORE = ['about', 'contact']
+const FOOTER_LEGAL = ['privacy-policy', 'terms', 'cookie-policy', 'disclaimer']
+const FOOTER_POLICIES = ['responsible-gambling', 'affiliate-disclosure', 'editorial-policy', 'aml-policy', 'kyc-policy']
+
+function footerPages(slugs: string[]) {
+  return LEGAL_PAGES.filter(({ slug }) => slugs.includes(slug))
+}
+
 const NAV_LINKS = [
   { href: '/casinos', label: COPY.nav.casinos },
   { href: '/special-offers', label: COPY.nav.specialOffers },
@@ -143,19 +159,19 @@ const NAV_LINKS = [
 /** The header dropdown panel, in this site's own palette. */
 const NAV_PANEL = {
   panelClassName: 'bg-paper ring-1 ring-line',
-  itemClassName: 'text-ink-soft hover:bg-brand/10 hover:text-brand',
-  allItemClassName: 'text-ink hover:bg-brand/10 hover:text-brand',
-  arrowClassName: 'text-brand',
+  itemClassName: 'text-ink-soft hover:bg-surface hover:text-white',
+  allItemClassName: 'text-ink hover:bg-surface hover:text-white',
+  arrowClassName: 'text-brand-soft',
 }
 
-/** The phone menu (below `md`), in this site's own palette. */
+/** The phone and tablet menu (below `lg`), in this site's own palette. */
 const NAV_MOBILE = {
-  triggerClassName: 'text-ink hover:bg-brand/10 hover:text-brand',
+  triggerClassName: 'text-ink hover:bg-paper',
   panelClassName: 'bg-paper border-line',
-  rowClassName: 'text-ink hover:bg-brand/10 hover:text-brand',
-  rowExpandedClassName: 'bg-brand/10 text-brand',
-  allClassName: 'text-ink hover:bg-brand/10 hover:text-brand',
-  childClassName: 'text-ink-soft hover:bg-brand/10 hover:text-brand',
+  rowClassName: 'text-ink hover:bg-surface',
+  rowExpandedClassName: 'bg-surface text-white',
+  allClassName: 'text-ink hover:bg-surface',
+  childClassName: 'text-ink-soft hover:bg-surface hover:text-white',
   guideClassName: 'border-line',
 }
 
@@ -212,19 +228,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             __html: jsonLdScript(siteGraph),
           }}
         />
-        <header className="sticky top-0 z-40 border-b border-line bg-cream/90 backdrop-blur-xl">
-          <div className="container mx-auto max-w-6xl px-4 h-16 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-40 border-b border-line bg-cream/90 backdrop-blur-[14px]">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-4 py-3">
             <Logo />
-            <nav aria-label="Main navigation" className="hidden md:block no-scrollbar -mr-4 min-w-0 overflow-x-auto pr-4">
-              <ul className="flex items-center gap-0.5 sm:gap-1" role="list">
+            <nav aria-label="Main navigation" className="hidden lg:block no-scrollbar -mr-4 min-w-0 overflow-x-auto pr-4">
+              <ul className="flex items-center gap-0.5" role="list">
                 {navLinks.map(({ href, label }) =>
                   href === '/casinos' && categoryMenuItems.length > 0 ? (
-                    <NavDropdown key={href} label={label} href={href} allLabel={COPY.nav.allCasinos} itemBasePath="/categories" items={categoryMenuItems} triggerClassName="flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand/10 hover:text-brand sm:px-4" {...NAV_PANEL} />
+                    <NavDropdown key={href} label={label} href={href} allLabel={COPY.nav.allCasinos} itemBasePath="/categories" items={categoryMenuItems} triggerClassName={NAV_LINK} {...NAV_PANEL} />
                   ) : href === '/special-offers' && bonusMenuItems.length > 0 ? (
-                    <NavDropdown key={href} label={label} href={href} allLabel={COPY.nav.allOffers} itemBasePath="/bonuses" items={bonusMenuItems} triggerClassName="flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand/10 hover:text-brand sm:px-4" {...NAV_PANEL} />
+                    <NavDropdown key={href} label={label} href={href} allLabel={COPY.nav.allOffers} itemBasePath="/bonuses" items={bonusMenuItems} triggerClassName={NAV_LINK} {...NAV_PANEL} />
                   ) : (
                   <li key={href}>
-                    <Link href={href} className="flex min-h-11 items-center whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold text-ink transition-colors hover:bg-brand/10 hover:text-brand sm:px-4">
+                    <Link href={href} className={NAV_LINK}>
                       {label}
                     </Link>
                   </li>
@@ -232,8 +248,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 )}
               </ul>
             </nav>
-            {/* Below md the strip above is hidden and this menu replaces it. */}
+            {/* Below lg the strip above is hidden and this menu replaces it. */}
             <MobileNav
+              hideFrom="lg"
               links={navLinks}
               groups={{
                 '/casinos': { allLabel: COPY.nav.allCasinos, items: categoryMenuItems, itemBasePath: '/categories' },
@@ -246,8 +263,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
         {/* Newsletter strip — rendered while SUBSCRIBE_ENABLED is true. */}
         {SUBSCRIBE_ENABLED && (
-          <section className="border-b border-line bg-paper/50 backdrop-blur-xl">
-            <div className="container mx-auto max-w-6xl px-4 py-3.5 sm:py-5">
+          <section className="cg-alert border-b border-line" aria-label="Payout alerts">
+            <div className="mx-auto max-w-[1200px] px-4 py-3.5">
               <NewsletterForm />
             </div>
           </section>
@@ -255,87 +272,79 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
         <div className="flex-1">{children}</div>
 
-        <footer className="mt-auto border-t border-line bg-paper">
-          <div className="container mx-auto max-w-6xl px-4 py-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-              <div>
+        <footer className="mt-14 border-t border-line bg-night">
+          <div className="mx-auto max-w-[1200px] px-4 pb-7 pt-14">
+            <div className="flex flex-wrap justify-between gap-10">
+              <div className="max-w-[360px] flex-[1_1_260px]">
                 <div className="flex items-center gap-3">
-                  <LogoMark size={36} />
-                  <p className="font-sans text-xl font-bold text-ink">
-                    Cro<span className="text-brand">gambline</span>
-                  </p>
+                  <LogoMark />
+                  <p className="font-display text-[20px] leading-none text-ink">Crogambline</p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-muted">
-                  {COPY.footer.tagline}
-                </p>
+                <p className="mt-3.5 text-sm text-muted">{COPY.footer.tagline}</p>
                 {socialLinks.length > 0 && (
                   <div className="mt-5">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand">Follow us</p>
+                    <p className="mb-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Follow us</p>
                     <SocialIcons links={socialLinks} />
                   </div>
                 )}
               </div>
 
-              {/* On the right edge but LEFT-aligned, as on winpalack: right-aligning
-                  started every label at a different x, so the column read as
-                  ragged. `justify-self-end` sizes the column to its labels and
-                  pushes it to the right of its grid track. */}
-              <div className="sm:justify-self-end">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-brand">Explore</p>
-                <ul className="flex flex-col gap-2">
-                  {navLinks.map(({ href, label }) =>
-                    href === '/casinos' && categoryMenuItems.length > 0 ? (
-                      <FooterNavGroup key={href} label={label} href={href} allLabel={COPY.nav.allCasinos} itemBasePath="/categories" items={categoryMenuItems} linkClassName="inline-block -mx-1 px-1 py-3 -my-3 text-sm text-ink-soft transition-colors hover:text-brand" guideClassName="border-line" />
-                    ) : href === '/special-offers' && bonusMenuItems.length > 0 ? (
-                      <FooterNavGroup key={href} label={label} href={href} allLabel={COPY.nav.allOffers} itemBasePath="/bonuses" items={bonusMenuItems} linkClassName="inline-block -mx-1 px-1 py-3 -my-3 text-sm text-ink-soft transition-colors hover:text-brand" guideClassName="border-line" />
-                    ) : (
-                    <li key={href}>
-                      <Link href={href} className="inline-block -mx-1 px-1 py-3 -my-3 text-sm text-ink-soft transition-colors hover:text-brand">{label}</Link>
+              <div className="grid flex-[2_1_480px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-6">
+                <div>
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Explore</p>
+                  <ul className="mt-2.5 flex flex-col gap-2.5">
+                    {navLinks.map(({ href, label }) =>
+                      href === '/casinos' && categoryMenuItems.length > 0 ? (
+                        <FooterNavGroup key={href} label={label} href={href} allLabel={COPY.nav.allCasinos} itemBasePath="/categories" items={categoryMenuItems} linkClassName={FOOTER_LINK} guideClassName="border-line" />
+                      ) : href === '/special-offers' && bonusMenuItems.length > 0 ? (
+                        <FooterNavGroup key={href} label={label} href={href} allLabel={COPY.nav.allOffers} itemBasePath="/bonuses" items={bonusMenuItems} linkClassName={FOOTER_LINK} guideClassName="border-line" />
+                      ) : (
+                        <li key={href}>
+                          <Link href={href} className={FOOTER_LINK}>{label}</Link>
+                        </li>
+                      ),
+                    )}
+                    {footerPages(FOOTER_EXPLORE).map(({ slug, label }) => (
+                      <li key={slug}><Link href={`/${slug}`} className={FOOTER_LINK}>{label}</Link></li>
+                    ))}
+                  </ul>
+                </div>
+                <nav aria-label="Legal">
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Legal</p>
+                  <ul className="mt-2.5 flex flex-col gap-2.5">
+                    {footerPages(FOOTER_LEGAL).map(({ slug, label }) => (
+                      <li key={slug}><Link href={`/${slug}`} className={FOOTER_LINK}>{label}</Link></li>
+                    ))}
+                    <li>
+                      <CookieSettingsButton className={FOOTER_LINK} />
                     </li>
-                  ),
-                  )}
-                </ul>
+                  </ul>
+                </nav>
+                <nav aria-label="Policies">
+                  <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">Policies</p>
+                  <ul className="mt-2.5 flex flex-col gap-2.5">
+                    {footerPages(FOOTER_POLICIES).map(({ slug, label }) => (
+                      <li key={slug}><Link href={`/${slug}`} className={FOOTER_LINK}>{label}</Link></li>
+                    ))}
+                  </ul>
+                </nav>
               </div>
             </div>
 
-            {/* Two even columns on a phone, so every link starts on one of two
-                shared edges; wrapped as a paragraph, no two rows lined up. */}
-            <nav aria-label="Legal" className="mt-10 border-t border-line pt-6">
-              <ul className="grid grid-cols-2 gap-x-5 gap-y-3 sm:flex sm:flex-wrap sm:gap-y-2">
-                {LEGAL_PAGES.map(({ slug, label }) => (
-                  <li key={slug}>
-                    <Link href={`/${slug}`} className="inline-block -mx-1 px-1 py-3 -my-3 text-sm text-faint transition-colors hover:text-brand sm:text-xs">{label}</Link>
-                  </li>
-                ))}
-                <li>
-                  <CookieSettingsButton />
-                </li>
-              </ul>
-            </nav>
-
-            <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 sm:flex-row">
-              <div className="text-center sm:text-left">
-                <p className="text-sm text-faint sm:text-xs">© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
-                {/* Postal address on its own line under the copyright: it stays
-                    legible on a phone, where the two would otherwise wrap into
-                    one another. `address` is the correct element semantically;
-                    `not-italic` is load-bearing, because Preflight does not
-                    reset it and the browser default for the tag is italic. */}
-                <address className="mt-1 text-sm not-italic text-faint sm:text-xs">{COPY.footer.postalAddress}</address>
-              </div>
-              {/* The circled 18+ reads as a mark rather than as another line of
-                  grey type, with "Gamble responsibly" beside it — the same pair
-                  every site's footer carries, each in its own accent. Not
-                  `aria-hidden`: the sentence beside it never says the age, so
-                  a screen reader needs the "18+" too. */}
-              <p className="flex items-center gap-3 text-sm text-faint sm:text-xs">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 border-brand-soft text-brand-soft text-[13px] font-extrabold">
-                  18+
-                </span>
-                Gamble responsibly
+            {/* The 18+ mark with the responsible-play line beside it. Not
+                `aria-hidden`: the sentence never says the age. */}
+            <div className="mt-10 flex flex-wrap items-center gap-4 rounded-2xl bg-ground-2 px-5 py-[18px]">
+              <span className="shrink-0 font-display font-display-wide text-[22px] text-accent">18+</span>
+              <p className="flex-[1_1_300px] text-sm text-muted">
+                <b className="text-ink">Gamble responsibly.</b> {COPY.footer.disclaimer}
               </p>
             </div>
-            <p className="mt-4 text-sm text-faint sm:text-xs">{COPY.footer.disclaimer}</p>
+
+            <div className="mt-6 flex flex-wrap justify-between gap-3 text-[13px] text-faint">
+              <p>© {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
+              {/* `not-italic` is load-bearing: the browser default for the tag is italic. */}
+              <address className="not-italic">{COPY.footer.postalAddress}</address>
+            </div>
           </div>
         </footer>
 

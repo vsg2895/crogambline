@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Crogambline — deep violet ground, violet primary, coral accent, 3px radius.
-   Fonts: IBM Plex Sans (body) + Archivo (display) + IBM Plex Mono (kickers).
-   Palette lifted from sites/crogambline.html.
+/* Crogambline — "time to cash" (2026-11-11, from sites/crogambline-redesign.html):
+   a payout runs like a clock. Wide heavy Archivo display type, a timeline
+   spine, violet = speed, signal orange = the stopwatch.
+   Fonts: IBM Plex Sans (body) + Archivo, variable width (display) + IBM Plex
+   Mono (kickers and figures).
 
    TOKEN NAMES are identical to the sibling sites (cream/paper/ink/brand/…) so
-   every shared component works here unchanged — only the values differ. A
-   component written for nongambles renders correctly with no conditional. */
+   every shared component works here unchanged — only the values differ. */
 :root {
   --background: #140f22;
   --foreground: #efebff;
@@ -17,37 +18,41 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  /* `cream` is the BASE page surface, `paper` the raised panel above it, and
-     `surface` a third step used by the mockup's tiles. All three are dark: the
-     names are shared with the siblings, and a light value here would collide
-     with `ink` (also light) and render text invisible on its own background. */
+  /* `cream` is the BASE page surface, `paper` the card above it, `surface` the
+     raised step (selected segment, step markers). `ground-2` is the band
+     between page and card; `night` the footer. All dark: the names are shared
+     with the siblings, and a light value would collide with `ink`. */
   --color-cream: #140f22;
-  --color-paper: #1b1430;
-  --color-surface: #221a3b;
+  --color-ground-2: #1a1430;
+  --color-paper: #1f1838;
+  --color-surface: #271f45;
+  --color-night: #0e0a1a;
 
   --color-ink: #efebff;
   --color-ink-soft: #d6cff0;
-  --color-muted: #a79cc7;
-  --color-faint: #6f6494;
+  --color-muted: #b7aedb;
+  --color-faint: #8a81ae;
 
-  /* Violet primary. `brand-ink` is the text colour that goes ON it. */
-  --color-brand: #7c5cff;
-  --color-brand-dark: #6647e6;
-  --color-brand-soft: #9a80ff;
+  /* Violet. `brand` is for text, borders and fills behind dark text;
+     `brand-dark` is the BUTTON fill, because white on the brighter #8f6bff
+     is 3.7:1 — below AA for 15px text. #7350f0 keeps the look at 5:1. */
+  --color-brand: #8f6bff;
+  --color-brand-dark: #7350f0;
+  --color-brand-deep: #6340dc;
+  --color-brand-soft: #b39cff;
   --color-brand-ink: #0d0820;
 
-  /* Coral secondary — the mockup's `accent`, used for the focus ring, the
-     logo pip and the ghost-button hover. A genuinely separate hue here, unlike
-     the sibling whose accent equals its brand. */
-  --color-accent: #ff7a5c;
-  --color-accent-dark: #e9603f;
-  --color-accent-ink: #2a0c05;
+  /* Signal orange — the stopwatch: kickers, rank badges, the focus ring. */
+  --color-accent: #ff8a3d;
+  --color-accent-soft: #ffb27f;
+  --color-accent-dark: #e8732a;
+  --color-accent-ink: #2a1205;
 
-  --color-line: #322752;
-  --color-line-soft: #453770;
+  --color-line: #2f2652;
+  --color-line-soft: #3d3366;
 
-  --color-gold: #ffc46b;
-  --color-win: #6fe0a8;
+  --color-gold: #ffc861;
+  --color-win: #5fe0a0;
   --color-win-bg: #10281d;
 
   --font-sans: var(--font-plex-sans);
@@ -56,9 +61,6 @@
      and mono stacks are untouched: IBM Plex draws a conventional ampersand. */
   --font-display: 'Ampersand', var(--font-archivo);
   --font-mono: var(--font-plex-mono);
-
-  /* 3px, not the siblings' 8-16px. The design is deliberately sharp-edged. */
-  --radius-cg: 3px;
 }
 
 body {
@@ -95,85 +97,198 @@ body {
 .font-display {
   font-family: 'Ampersand', var(--font-archivo), system-ui, sans-serif;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+/* The widest, heaviest cut: hero and banner headlines, set in capitals. */
+.font-display-wide {
+  font-stretch: 118%;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+/* Outlined letters — the second line of the hero, the big card numerals. */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--color-brand-soft);
 }
 
-/* Mono kicker — the uppercase, wide-tracked label above section headings. */
+/* Mono kicker — the uppercase, wide-tracked orange label above headings. */
 .kicker {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
+  color: var(--color-accent);
 }
 
-/* ── Design vocabulary from sites/crogambline.html ──────────────────────────
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ── Design vocabulary from sites/crogambline-redesign.html ─────────────────
    Named component classes rather than repeated utility strings: each appears
    on dozens of elements, and the hover/focus states cannot be written inline. */
 
 .card {
   background: var(--color-paper);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-cg);
-  transition: border-color 0.15s, transform 0.15s;
+  border-radius: 20px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .card:hover {
   border-color: var(--color-line-soft);
-  transform: translateY(-2px);
+}
+
+/* The casino card: lifts and glows violet on hover or keyboard focus. */
+.cg-casino:hover,
+.cg-casino:focus-within {
+  background: linear-gradient(160deg, #2c2058, var(--color-paper) 60%);
+  border-color: var(--color-brand);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(143, 107, 255, 0.18);
+}
+.cg-casino .cg-logo {
+  transition: transform 0.2s;
+}
+.cg-casino:hover .cg-logo {
+  transform: scale(1.04);
 }
 /* The lift is decorative; anyone who has asked for less motion gets none. */
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .card:hover {
+  .cg-casino:hover,
+  .cg-casino:focus-within,
+  .cg-casino:hover .cg-logo {
     transition: none;
     transform: none;
   }
 }
 
 .btn-primary {
-  background: var(--color-brand);
+  background: var(--color-brand-dark);
   color: #fff;
-  border-radius: var(--radius-cg);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(143, 107, 255, 0.35);
 }
-.btn-primary:hover { background: var(--color-brand-dark); }
+.btn-primary:hover { background: var(--color-brand-deep); color: #fff; }
 
 .btn-accent {
   background: var(--color-accent);
   color: var(--color-accent-ink);
-  border-radius: var(--radius-cg);
+  border-radius: 12px;
 }
 .btn-accent:hover { background: var(--color-accent-dark); }
 
 .btn-ghost {
   border: 1px solid var(--color-line-soft);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--color-ink);
-  border-radius: var(--radius-cg);
+  border-radius: 12px;
 }
 .btn-ghost:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-/* Category chip. `chip-active` is the selected state. */
-.chip {
-  border: 1px solid var(--color-line);
-  color: var(--color-muted);
-  border-radius: var(--radius-cg);
-}
-.chip:hover {
-  border-color: var(--color-line-soft);
-  color: var(--color-ink);
-}
-.chip-active {
-  background: var(--color-brand);
-  border-color: var(--color-brand);
+  border-color: var(--color-brand-soft);
   color: #fff;
 }
 
-/* Hero ground: a violet bloom top-right, coral bottom-left. */
+/* Segmented control segment (category filter). `chip-active` is selected. */
+.chip {
+  color: var(--color-muted);
+  border-radius: 10px;
+}
+.chip:hover {
+  color: var(--color-ink);
+}
+.chip-active {
+  background: var(--color-surface);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px var(--color-line-soft);
+}
+
+/* Hero ground: one violet bloom off the top-right corner. */
 .hero-wash {
+  position: relative;
+  overflow: hidden;
+}
+.hero-wash::before {
+  content: '';
+  position: absolute;
+  width: 720px;
+  height: 720px;
+  right: -200px;
+  top: -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143, 107, 255, 0.28), transparent 62%);
+  pointer-events: none;
+}
+
+/* The newsletter band: violet tint fading out to the right. */
+.cg-alert {
+  background: linear-gradient(90deg, rgba(143, 107, 255, 0.14), transparent 70%);
+}
+
+/* Casino / offer page banner: orange and violet glows on deep violet. */
+.cg-banner {
   background:
-    radial-gradient(70% 90% at 88% 8%, rgba(124, 92, 255, 0.28) 0%, rgba(124, 92, 255, 0) 60%),
-    radial-gradient(50% 60% at 6% 96%, rgba(255, 122, 92, 0.16) 0%, rgba(255, 122, 92, 0) 65%),
-    linear-gradient(180deg, #150f24 0%, #191230 60%, #140f22 100%);
+    radial-gradient(circle at 80% 20%, rgba(255, 138, 61, 0.28), transparent 40%),
+    radial-gradient(circle at 20% 90%, rgba(143, 107, 255, 0.45), transparent 50%),
+    linear-gradient(135deg, #251a4a, #140f22);
+}
+
+/* Timeline spine: a vertical rule from each marker down to the next. */
+.cg-spine {
+  position: relative;
+}
+.cg-spine::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-line-soft);
+}
+.cg-spine:last-child::before {
+  display: none;
+}
+/* The FAQ's wider spine, fading out. */
+.cg-spine-qa::before {
+  left: 21px;
+  top: 44px;
+  bottom: 6px;
+  background: linear-gradient(var(--color-line-soft), transparent);
+}
+
+/* The ticket's perforation: a dashed rule with a notch cut from each side. */
+.cg-cut {
+  position: relative;
+  height: 0;
+  margin: 0 18px;
+  border-top: 2px dashed var(--color-line-soft);
+}
+.cg-cut::before,
+.cg-cut::after {
+  content: '';
+  position: absolute;
+  top: -13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: 1px solid var(--color-line-soft);
+}
+.cg-cut::before { left: -31px; }
+.cg-cut::after { right: -31px; }
+
+/* "Clock running": the pip blinks, unless less motion was asked for. */
+@media (prefers-reduced-motion: no-preference) {
+  .cg-blink {
+    animation: cg-blink 1.6s ease-in-out infinite;
+  }
+}
+@keyframes cg-blink {
+  50% { opacity: 0.25; }
 }
 
 /* ── Responsive safety net (all phones / tablets / laptops / large screens) ── */

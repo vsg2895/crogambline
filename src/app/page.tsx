@@ -6,8 +6,9 @@ import type { BonusSection } from '@/lib/api'
 import { buildItemListSchema, buildWebPageSchema, jsonLdScript, buildFaqSchema, SHARE_IMAGES } from '@/lib/seo'
 import { COPY } from '@/constants/copy'
 import { FAQ_ITEMS } from '@/constants/faq'
-import CasinoCard from '@/components/CasinoCard'
+import CasinoCard, { CASINO_GRID } from '@/components/CasinoCard'
 import BonusCategoryNav from '@/components/BonusCategoryNav'
+import BonusRows from '@/components/BonusRows'
 import CategoryNav from '@/components/CategoryNav'
 import SpecialOfferCard from '@/components/SpecialOfferCard'
 import { SITE_URL } from '@/lib/config'
@@ -20,18 +21,15 @@ import { casinosHeading } from '@/lib/categories'
 const HOME_BONUSES_PER_CATEGORY = 3
 
 /**
- * Grid placement for the FAQ cards. The grid is 2-up on tablets and 3-up on
- * desktop, and the number of questions is whatever the site's faq.ts holds, so
- * the LAST card stretches across whatever the final row leaves empty — five
- * questions fill a 3-column grid exactly instead of leaving a hole.
+ * The hero's "How we time a payout" card: the four stages of the clock the
+ * FAQ below explains. The last one is the finish, drawn in green.
  */
-function faqSpan(i: number): string {
-  const last = i === FAQ_ITEMS.length - 1
-  if (!last) return ''
-  const sm = FAQ_ITEMS.length % 2 === 1 ? 'sm:col-span-2' : 'sm:col-span-1'
-  const lg = { 0: 'lg:col-span-1', 1: 'lg:col-span-3', 2: 'lg:col-span-2' }[FAQ_ITEMS.length % 3] ?? ''
-  return `${sm} ${lg}`
-}
+const PAYOUT_STAGES = [
+  { title: 'Request sent', text: 'The clock starts the moment we ask for the money.' },
+  { title: 'Pending window', text: 'Time the casino holds the request before approving.' },
+  { title: 'Verification', text: 'Identity checks, listed separately for first payouts.' },
+  { title: 'Money arrives', text: 'The clock stops in our account, not at "approved".' },
+] as const
 
 const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? ''
 const YEAR = new Date().getFullYear()
@@ -143,201 +141,154 @@ export default async function HomePage({ searchParams }: Props) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(graph) }} />
 
       <main>
-        {/* Hero */}
-        <section className="hero-wash relative overflow-hidden px-4 pt-10 pb-10 sm:pt-20 sm:pb-24 lg:pt-28 lg:pb-32">
-          <div className="container relative mx-auto max-w-4xl text-center">
-            <p className="kicker inline-block rounded-[3px] border border-accent/45 px-3 py-1 text-[11px] text-accent sm:px-4 sm:py-1.5 sm:text-xs">
-              {COPY.home.heroEyebrow}
-            </p>
-            {/* text-wrap:balance keeps the two-line headline from leaving one
-                orphan word on the second line at intermediate widths. */}
-            <h1
-              className="font-display mt-4 text-[30px] sm:mt-7 leading-[1.04] text-ink sm:text-[52px] lg:text-[66px]"
-              style={{ textWrap: 'balance' }}
-            >
-              {COPY.home.heroHeadline}{' '}
-              <br className="hidden sm:block" />
-              <span className="text-brand">{COPY.home.heroHighlight}</span>
-            </h1>
-            <p
-              className="mx-auto mt-4 max-w-[560px] text-[15px] sm:mt-6 sm:text-base leading-relaxed text-muted lg:text-[17px]"
-              style={{ textWrap: 'pretty' }}
-            >
-              {COPY.home.heroSubtitle}
-            </p>
-            <div className="mt-6 flex flex-col justify-center gap-2.5 sm:mt-9 sm:gap-3 sm:flex-row sm:items-center">
-              <Link
-                href="/casinos"
-                className="btn-primary flex min-h-[3.25rem] w-full sm:w-auto whitespace-nowrap items-center justify-center px-6 py-3.5 text-base font-semibold sm:flex-none sm:px-7 sm:py-3.5"
-              >
-                {COPY.home.featuredCasinos}
-              </Link>
-              {anyOffersVisible && (
-                <Link
-                  href="/special-offers"
-                  className="btn-ghost flex min-h-[3.25rem] w-full sm:w-auto whitespace-nowrap items-center justify-center px-6 py-[13px] text-base font-semibold sm:flex-none sm:px-7 sm:py-[13px]"
-                >
-                  {COPY.home.specialOffers}
+        {/* Hero: the claim on the left, the stopwatch on the right. */}
+        <section className="hero-wash border-b border-line">
+          <div className="relative mx-auto flex max-w-[1200px] flex-wrap items-center gap-12 px-4 pb-16 pt-14 sm:pt-[76px]">
+            <div className="min-w-0 flex-[1.25_1_520px]">
+              <p className="kicker">{COPY.home.heroEyebrow}</p>
+              <h1 className="font-display font-display-wide mt-[18px] text-[46px] leading-[0.92] text-ink sm:text-[clamp(46px,7vw,92px)]">
+                {COPY.home.heroHeadline}{' '}
+                <span className="text-outline block">{COPY.home.heroHighlight}</span>
+              </h1>
+              <p className="mt-6 max-w-[520px] text-lg text-muted">{COPY.home.heroSubtitle}</p>
+              <div className="mt-[30px] flex flex-wrap gap-3">
+                <Link href="/casinos" className="btn-primary inline-flex min-h-12 items-center justify-center whitespace-nowrap px-[22px] text-[15px] font-semibold">
+                  {COPY.home.featuredCasinos}
                 </Link>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Casinos by category */}
-        <section className="px-4 py-8 sm:py-14" aria-labelledby="top-casinos-heading">
-          <div className="container mx-auto max-w-6xl">
-            <div className="mb-4 flex items-end justify-between gap-4 sm:mb-8">
-              <div>
-                <h2 id="top-casinos-heading" className="font-display text-2xl font-semibold text-ink sm:text-4xl">{COPY.home.topCasinosTitle}</h2>
-                <p className="mt-1 text-sm text-muted sm:mt-2 sm:text-base">{COPY.home.topCasinosSubtitle}</p>
+                {/* Only when a visible offer exists: a button to an empty page
+                    is worse than no button. */}
+                {anyOffersVisible && (
+                  <Link href="/special-offers" className="btn-ghost inline-flex min-h-12 items-center justify-center whitespace-nowrap px-[22px] text-[15px] font-semibold">
+                    {COPY.home.specialOffers}
+                  </Link>
+                )}
               </div>
             </div>
 
+            <aside aria-labelledby="payout-clock" className="min-w-0 flex-[1_1_340px] rounded-[20px] border border-line-soft bg-paper px-[22px] pb-2.5 pt-[22px] lg:ml-auto lg:max-w-[440px]">
+              <div className="mb-3.5 flex items-center justify-between gap-3">
+                <h2 id="payout-clock" className="font-display text-[17px] text-ink">How we time a payout</h2>
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-accent">
+                  <span aria-hidden className="cg-blink h-2 w-2 rounded-full bg-accent" />
+                  Clock running
+                </span>
+              </div>
+              <ol>
+                {PAYOUT_STAGES.map((stage, i) => {
+                  const last = i === PAYOUT_STAGES.length - 1
+                  return (
+                    <li key={stage.title} className="cg-spine grid grid-cols-[28px_minmax(0,1fr)] gap-3.5 pb-[18px]">
+                      <span aria-hidden className={`grid h-7 w-7 place-items-center rounded-full border-2 font-mono text-xs ${last ? 'border-win bg-win text-win-bg' : 'border-brand-dark bg-brand-dark text-white'}`}>
+                        {last ? '✓' : i + 1}
+                      </span>
+                      <div>
+                        <b className="block text-[15px] text-ink">{stage.title}</b>
+                        <span className="block text-[13px] text-muted">{stage.text}</span>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ol>
+            </aside>
+          </div>
+        </section>
+
+        {/* The ranking */}
+        <section id="rank" className="py-[72px]" aria-labelledby="top-casinos-heading">
+          <div className="mx-auto max-w-[1200px] px-4">
+            <p className="kicker">The ranking</p>
+            <h2 id="top-casinos-heading" className="font-display mt-2 text-[30px] leading-none text-ink sm:text-[48px]">{COPY.home.topCasinosTitle}</h2>
+            <p className="mt-3 max-w-[560px] text-muted">{COPY.home.topCasinosSubtitle}</p>
+
             {categories.length > 0 && selected && (
-              <div className="mb-5 sm:mb-8"><CategoryNav categories={categories} selected={selected} /></div>
+              <div className="mt-[26px]"><CategoryNav categories={categories} selected={selected} /></div>
             )}
 
             {casinos.length === 0 ? (
-              <p className="text-muted">{COPY.casinos.noResults}</p>
+              <p className="mt-6 text-muted">{COPY.casinos.noResults}</p>
             ) : (
-              <ol className="flex flex-col gap-5">
+              <ol className={`mt-[22px] ${CASINO_GRID}`}>
                 {casinos.map((casino, i) => <CasinoCard key={casino.id} casino={casino} rank={i + 1} />)}
               </ol>
             )}
 
             {activeCategory && hasMoreCasinos && (
-              <div className="mt-9 text-center">
-                <Link href={`/categories/${selected}`} aria-label={`See all ${casinosHeading(activeCategory.name)}`} className="inline-flex rounded-full border border-line-soft bg-paper px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand">
-                  See More →
+              <div className="mt-[26px] flex justify-center">
+                <Link href={`/categories/${selected}`} aria-label={`See More Casinos — ${casinosHeading(activeCategory.name)}`} className="btn-ghost inline-flex min-h-12 items-center px-[22px] text-[15px] font-semibold">
+                  See More Casinos →
                 </Link>
               </div>
             )}
           </div>
         </section>
 
-        {/* Bonus types — directly under the casino list.
-
-            The casinos are what visitors came for, so they come first under
-            the hero; the bonus-type chips follow as the next way in.
-
-            Renders nothing when the site does not publish the Bonus area, so
-            the band collapses rather than leaving a gap. */}
+        {/* Bonuses by kind — renders nothing when the site does not publish
+            the Bonus area, so the band collapses rather than leaving a gap. */}
         {bonusSections.length > 0 && (
-          <section className="px-4 pb-10">
-            <div className="container mx-auto max-w-6xl">
-              {/*
-                * The chips sit on their own panel rather than on the bare page.
-                *
-                * On the plain ground the row read as loose buttons left over
-                * from the hero; a panel makes it one control surface, which is
-                * what it is. The colour is this site's own — the two blurred
-                * discs are its brand and accent, kept low enough that the CHIPS
-                * stay the brightest thing in the band. A saturated panel would
-                * flatten them by contrast.
-                */}
-              {/*
-                * The site's OWN hero wash, not a hand-mixed copy of it.
-                *
-                * `.hero-wash` is the gradient behind the headline at the top of
-                * this page — the violet bloom, the coral corner and the
-                * vertical fall to the page ground, defined once in globals.css.
-                * Reusing it means this band is the same surface as the hero
-                * rather than something that merely resembles it, and a change
-                * to the brand moves both together instead of leaving one of
-                * them behind.
-                *
-                * It carries its own background, so the decoration layer this
-                * block used to have is gone: three radial gradients stacked
-                * under the chips, where one class already says it.
-                */}
-              <div className="hero-wash relative overflow-hidden rounded-3xl px-4 py-6 sm:px-8 sm:py-8">
-                <div className="relative">
-                  <BonusCategoryNav sections={bonusSections} />
-                </div>
-              </div>
+          <section className="pb-[72px]">
+            <div className="mx-auto max-w-[1200px] px-4">
+              <BonusCategoryNav sections={bonusSections} />
             </div>
           </section>
         )}
 
-        {/* Bonuses — one heading, then a block per bonus type, like winpalack.
-            Built from the same getBonusArea payload as the chips and the
-            header/footer Bonuses menus, so no block links to a type the menu
-            lacks. A site without the Bonus area keeps the flat grid below. */}
+        {/* Bonuses — a row per bonus type, built from the same getBonusArea
+            payload as the list above and the header/footer menus, so no row
+            links to a type the menu lacks. A site without the Bonus area keeps
+            the flat offers grid instead. */}
         {bonusSections.length > 0 ? (
-          <section className="border-t border-line px-4 py-16" aria-labelledby="bonus-heading">
-            <div className="container mx-auto max-w-6xl">
-              <div className="mb-10 flex items-end justify-between gap-4">
-                <h2 id="bonus-heading" className="font-display text-3xl font-semibold text-ink sm:text-4xl">{COPY.home.bonus}</h2>
-                <Link href="/special-offers" className="hidden py-3 -my-3 text-sm font-bold text-brand hover:text-brand-dark sm:block whitespace-nowrap">{COPY.home.viewAll} →</Link>
+          <section className="pb-[72px]" aria-labelledby="bonus-heading">
+            <div className="mx-auto max-w-[1200px] px-4">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 id="bonus-heading" className="font-display text-[30px] leading-none text-ink sm:text-[48px]">{COPY.home.bonus}</h2>
+                <Link href="/special-offers" aria-label={`${COPY.home.viewAll} bonuses`} className="inline-flex min-h-11 items-center font-semibold text-brand-soft hover:text-white">{COPY.home.viewAll} →</Link>
               </div>
-              <div className="space-y-12">
-                {bonusSections.map((section) => (
-                  /* id: /#bonus-<slug> anchors, as on winpalack; scroll-mt clears the sticky header. */
-                  <div key={section.id} id={`bonus-${section.slug}`} className="scroll-mt-24">
-                    <div className="mb-5">
-                      <h3 className="font-display text-xl font-bold text-ink sm:text-2xl">
-                        <Link href={`/bonuses/${section.slug}`} className="transition-colors hover:text-brand-dark">
-                          {section.name}
-                        </Link>
-                      </h3>
-                      {section.description && <p className="mt-1 text-muted">{section.description}</p>}
-                    </div>
-                    <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                      {section.offers.map((offer) => <SpecialOfferCard key={offer.id} offer={offer} />)}
-                    </div>
-                    <div className="mt-5">
-                      <Link href={`/bonuses/${section.slug}`} aria-label={`${COPY.home.seeMore} — ${section.name}`} className="inline-flex rounded-full border border-line-soft bg-paper px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand">
-                        {COPY.home.seeMore} →
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-9 text-center">
-                <Link href="/special-offers" aria-label={COPY.home.seeAllBonuses} className="inline-flex rounded-full border border-line-soft bg-paper px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand">
+              <BonusRows sections={bonusSections} />
+              <div className="mt-[26px]">
+                <Link href="/special-offers" className="btn-ghost inline-flex min-h-12 items-center px-[22px] text-[15px] font-semibold">
                   {COPY.home.seeAllBonuses} →
                 </Link>
               </div>
             </div>
           </section>
         ) : topOffers.length > 0 && (
-          <section className="border-t border-line px-4 py-16" aria-labelledby="offers-heading">
-            <div className="container mx-auto max-w-6xl">
-              <div className="mb-10 flex items-end justify-between gap-4">
-                <h2 id="offers-heading" className="font-display text-3xl font-semibold text-ink sm:text-4xl">{COPY.home.specialOffers}</h2>
-                <Link href="/special-offers" className="hidden py-3 -my-3 text-sm font-bold text-brand hover:text-brand-dark sm:block whitespace-nowrap">{COPY.home.viewAll} →</Link>
+          <section className="pb-[72px]" aria-labelledby="offers-heading">
+            <div className="mx-auto max-w-[1200px] px-4">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 id="offers-heading" className="font-display text-[30px] leading-none text-ink sm:text-[48px]">{COPY.home.specialOffers}</h2>
+                <Link href="/special-offers" aria-label={`${COPY.home.viewAll} offers`} className="inline-flex min-h-11 items-center font-semibold text-brand-soft hover:text-white">{COPY.home.viewAll} →</Link>
               </div>
-              <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-[26px] grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {topOffers.map((offer) => <SpecialOfferCard key={offer.id} offer={offer} />)}
-              </div>
-
-              <div className="mt-9 text-center">
-                <Link href="/special-offers" aria-label="See all special offers" className="inline-flex rounded-full border border-line-soft bg-paper px-7 py-3.5 text-sm font-semibold text-ink transition-colors hover:border-brand hover:text-brand">
-                  See More →
-                </Link>
               </div>
             </div>
           </section>
         )}
-        {/* FAQ — rendered visibly because FAQPage structured data requires it.
-            Wider than the rest of the page (90rem, not the 6xl the listings
-            use) and with roomier cards on desktop: a block of prose reads better with a
-            longer measure than a list of casino cards does, and the old
-            max-w-3xl column left a third of the screen empty on each side.
-            Three-up card grid, two-up on tablets, one column on phones. */}
-        <section className="border-t border-line px-4 py-16 sm:px-6 lg:px-8 lg:py-20" aria-labelledby="faq-heading">
-          <div className="mx-auto max-w-[90rem]">
-            <h2 id="faq-heading" className="font-display text-3xl font-semibold text-ink sm:text-4xl">{COPY.home.faqTitle}</h2>
-            <dl className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+
+        {/* FAQ — rendered visibly because FAQPage structured data requires it,
+            from the same FAQ_ITEMS array the schema is built from. Heading
+            column on the left (sticky from lg), the questions on a numbered
+            spine on the right. */}
+        <section aria-labelledby="faq-heading">
+          <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-12 px-4">
+            <div className="flex-[1_1_300px] lg:sticky lg:top-24">
+              <p className="kicker">FAQ</p>
+              <h2 id="faq-heading" className="font-display font-display-wide mt-2.5 text-[34px] leading-[0.98] text-ink sm:text-[clamp(34px,4.4vw,54px)]">{COPY.home.faqTitle}</h2>
+              <p className="mt-4 text-muted">Hours, not adjectives. This is what the numbers on the list mean.</p>
+            </div>
+            <div className="min-w-0 flex-[2_1_520px]">
               {FAQ_ITEMS.map((item, i) => (
-                <div key={item.question} className={`${faqSpan(i)} card p-6 lg:p-8`}>
-                  <dt className="font-bold text-ink text-base lg:text-lg">{item.question}</dt>
-                  <dd className="mt-3 text-sm leading-relaxed text-muted lg:text-base">{item.answer}</dd>
+                <div key={item.question} className="cg-spine cg-spine-qa grid grid-cols-[44px_minmax(0,1fr)] gap-[18px] pb-[30px] last:pb-0">
+                  <span aria-hidden className="grid h-11 w-11 place-items-center rounded-[14px] border border-line-soft bg-surface font-mono text-sm text-accent">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div>
+                    <h3 className="mt-2 text-[19px] font-semibold text-ink">{item.question}</h3>
+                    <p className="mt-2 text-[15px] leading-[1.7] text-muted">{item.answer}</p>
+                  </div>
                 </div>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
       </main>

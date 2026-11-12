@@ -84,7 +84,7 @@ export default function ReviewForm({ casinoSlug }: { casinoSlug: string }) {
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-line bg-paper p-6 text-sm text-ink">
+      <div className="rounded-[20px] border border-line bg-paper p-6 text-sm text-ink">
         {published ? COPY.reviews.success : COPY.reviews.successPending}
       </div>
     )
@@ -95,7 +95,7 @@ export default function ReviewForm({ casinoSlug }: { casinoSlug: string }) {
   const errorText = 'mt-1 text-xs text-rose-400'
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border border-line bg-paper p-6">
+    <form onSubmit={onSubmit} className="rounded-[20px] border border-line bg-paper p-6">
       <h3 className="font-display text-lg font-semibold text-ink">{COPY.reviews.formTitle}</h3>
       <p className="mt-1 text-sm text-muted">{COPY.reviews.formIntro}</p>
 
@@ -144,7 +144,7 @@ export default function ReviewForm({ casinoSlug }: { casinoSlug: string }) {
               onClick={() => setRating(n)}
               className={`h-11 w-11 rounded-xl border text-sm font-semibold transition-colors ${
                 rating >= n
-                  ? 'border-brand bg-gradient-to-b from-brand-soft to-brand-dark text-white'
+                  ? 'border-accent bg-accent/15 text-gold'
                   : 'border-line-soft bg-paper text-faint hover:border-brand'
               }`}
             >
@@ -188,7 +188,7 @@ export default function ReviewForm({ casinoSlug }: { casinoSlug: string }) {
         {errors.body && <p className={errorText}>{errors.body}</p>}
       </div>
 
-      <button type="submit" disabled={loading} className="mt-5 min-h-11 rounded-xl bg-gradient-to-b from-brand-soft to-brand-dark px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-brand/25 transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60">
+      <button type="submit" disabled={loading} className="btn-primary mt-5 min-h-12 px-[22px] text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-60">
         {COPY.reviews.submit}
       </button>
     </form>
